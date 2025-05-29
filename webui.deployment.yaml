@@ -1,20 +1,32 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: webui-deployment
+  name: webui-frontend
 spec:
   replicas: 1
   selector:
     matchLabels:
-     app: webui
-  template:
-   metadata:
-    labels:
       app: webui
-   spec:
-    containers:
-     name: webui
-     image: ghcr.io/open-webui/open-webui:main
-     ports:
-      - containerPort: 8080
-    env:    
+  template:
+    metadata:
+      labels:
+        app: webui
+    spec:
+      containers:
+        - name: webui
+          image: ghcr.io/open-webui/open-webui:main
+          ports:
+            - containerPort: 8080
+          env:
+            - name: OLLAMA_API_BASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: webui-config
+                  key: OLLAMA_API_BASE_URL
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "250m"
+            limits:
+              memory: "2Gi"
+              cpu: "500m"
